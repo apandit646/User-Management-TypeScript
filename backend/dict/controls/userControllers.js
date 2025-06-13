@@ -12,9 +12,16 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.registerUser = void 0;
+exports.loginUser = exports.registerUser = void 0;
 const config_1 = __importDefault(require("../db/config"));
 const UserModel_1 = __importDefault(require("../models/UserModel"));
+const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
+const crypto_1 = __importDefault(require("crypto"));
+const secretKey = crypto_1.default
+    .createHash('sha256')
+    .update(String('your-secret-key'))
+    .digest('base64')
+    .substr(0, 32);
 const registerUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const { name, email, phoneNo, type, role, password } = req.body;
@@ -46,3 +53,36 @@ const registerUser = (req, res) => __awaiter(void 0, void 0, void 0, function* (
     }
 });
 exports.registerUser = registerUser;
+const loginUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const { email, password } = req.body;
+        const user = yield UserModel_1.default.findOne({ where: { email, password } });
+        if (!user) {
+            res.status(401).json({ message: "Invalid email or password" });
+            return;
+        }
+        // Create a JWT token
+        const token = jsonwebtoken_1.default.sign({ id: user.id, name: user.name, email: user.email }, secretKey, { expiresIn: '10h' } // Token expires in 1 hour
+        );
+        console.log("User logged in successfully:", user.id);
+        res.status(200).json({
+            message: "Login successful",
+            token,
+            users: {
+                id: user.id,
+                name: user.name,
+                email: user.email,
+                phoneNo: user.phoneNo,
+                type: user.type,
+                role: user.role
+            }
+        });
+        return;
+    }
+    catch (error) {
+        console.error("Error logging in user:", error);
+        res.status(500).json({ message: "Internal server error" });
+        return;
+    }
+});
+exports.loginUser = loginUser;

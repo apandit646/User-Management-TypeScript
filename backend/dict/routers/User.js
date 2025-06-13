@@ -5,7 +5,7 @@ const UserControllers_1 = require("../controls/UserControllers");
 const router = (0, express_1.Router)();
 // User routes
 router.post('/register', UserControllers_1.registerUser);
-// router.post('/login', loginUser);
+router.post('/login', UserControllers_1.loginUser);
 // Export the router
 exports.default = router;
 // const express = require('express');

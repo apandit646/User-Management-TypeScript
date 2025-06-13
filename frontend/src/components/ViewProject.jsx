@@ -13,7 +13,7 @@ const ViewProject = () => {
   const getAllEmployeesData = useCallback(async () => {
     try {
       const response = await fetch(
-        `http://localhost:3000/api/employee/getAllEmployeeData`,
+        `http://localhost:3000/api/users/getAllUsers`,
         {
           method: "GET",
           headers: {

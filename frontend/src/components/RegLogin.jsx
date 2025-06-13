@@ -84,7 +84,7 @@ const RegLogin = ({ setIsLoggedIn }) => {
         body: JSON.stringify(dataToSend),
       });
 
-      if (!response.ok) {
+      if (response.status !== 200) {
         const errorData = await response.json();
         throw new Error(
           errorData.message || `Login failed with status: ${response.status}`
@@ -94,8 +94,9 @@ const RegLogin = ({ setIsLoggedIn }) => {
       const result = await response.json();
 
       // Store auth data (Note: localStorage not available in artifacts)
+
       localStorage.setItem("token", result.token);
-      localStorage.setItem("UserId", result.data.id);
+      localStorage.setItem("UserId", result.users.id);
 
       // For demo, we'll just simulate successful login
       console.log("Login successful:", result);

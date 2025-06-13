@@ -14,8 +14,10 @@ app.use((0, cors_1.default)());
 app.use(body_parser_1.default.json());
 app.use(body_parser_1.default.urlencoded({ extended: true }));
 const User_1 = __importDefault(require("./routers/User")); // Adjust the path as necessary
+const Project_1 = __importDefault(require("./routers/Project")); // Adjust the path as necessary
 // Use user routes
 app.use('/api/users', User_1.default);
+app.use('/api/project', Project_1.default);
 // Start the server
 app.listen(port, () => {
     console.log(`Server is running at http://localhost:${port}`);

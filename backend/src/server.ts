@@ -11,9 +11,11 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
 import userRoutes from './routers/User'; // Adjust the path as necessary
+import projectRoutes from './routers/Project'; // Adjust the path as necessary
 
 // Use user routes
 app.use('/api/users', userRoutes);
+app.use('/api/project', projectRoutes);
 
 
 

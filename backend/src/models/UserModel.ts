@@ -1,8 +1,9 @@
 // models/User.ts
 
-import { DataTypes, Model, Optional, Sequelize } from 'sequelize';
+import { DataTypes, Model} from 'sequelize';
 import sequelize from '../db/config'; // your Sequelize instance
 import { UserAttributes, UserCreationAttributes } from '../common/Usercommon'; // import user attributes
+
 
 // Use `Model` generic with `UserAttributes` and `UserCreationAttributes`
 type UserInstance = Model<UserAttributes, UserCreationAttributes> & UserAttributes;
