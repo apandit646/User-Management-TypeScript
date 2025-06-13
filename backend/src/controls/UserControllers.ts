@@ -98,17 +98,11 @@ export const loginUser = async (req: Request, res: Response): Promise<void> => {
 
 export const getAllUsers = async (req: Request, res: Response): Promise<void> => {
   try {
-    const offset = Number(req.query.offset) || 0;
-    const limit = Number(req.query.limit) || 10;
 
-    const users = await User.findAndCountAll({
+    const users = await User.findAll({
       where: {
         type: 'employee' // Assuming you want to fetch only employees
       },
-      offset,
-      limit,
-      order: [['createdAt', 'DESC']]
-
     });
 
     res.status(200).json(users);

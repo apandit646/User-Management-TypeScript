@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.loginUser = exports.registerUser = void 0;
+exports.getAllUsers = exports.loginUser = exports.registerUser = void 0;
 const config_1 = __importDefault(require("../db/config"));
 const UserModel_1 = __importDefault(require("../models/UserModel"));
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
@@ -86,3 +86,23 @@ const loginUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     }
 });
 exports.loginUser = loginUser;
+const getAllUsers = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const offset = Number(req.query.offset) || 0;
+        const limit = Number(req.query.limit) || 10;
+        const users = yield UserModel_1.default.findAndCountAll({
+            where: {
+                type: 'employee' // Assuming you want to fetch only employees
+            },
+            offset,
+            limit,
+            order: [['createdAt', 'DESC']]
+        });
+        res.status(200).json(users);
+    }
+    catch (error) {
+        console.error("Error fetching users:", error);
+        res.status(500).json({ message: "Internal server error" });
+    }
+});
+exports.getAllUsers = getAllUsers;

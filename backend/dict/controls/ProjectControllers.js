@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getProjectById = exports.getAllProjects = exports.createProject = void 0;
+exports.getAllProjects = exports.createProject = void 0;
 const config_1 = __importDefault(require("../db/config"));
 const ProjectMedel_1 = __importDefault(require("../models/ProjectMedel"));
 const createProject = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
@@ -53,17 +53,19 @@ exports.createProject = createProject;
 const getAllProjects = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     var _a, _b;
     console.log("Fetching all projects for manager:", (_a = req.user) === null || _a === void 0 ? void 0 : _a.id);
-    const { offset = 0, limit = 10 } = req.query;
+    const offset = Number(req.query.offset) || 0;
+    const limit = Number(req.query.limit) || 10;
     console.log("Offset:", offset, "Limit:", limit);
     try {
         const projects = yield ProjectMedel_1.default.findAndCountAll({
             where: {
-                managerId: (_b = req.user) === null || _b === void 0 ? void 0 : _b.id // Assuming the user ID is stored in req.user after authentication
+                managerId: (_b = req.user) === null || _b === void 0 ? void 0 : _b.id
             },
-            offset: parseInt(offset, 10),
-            limit: parseInt(limit, 10),
-            order: [['createdAt', 'DESC']] // Order by creation date, descending
+            offset,
+            limit,
+            order: [['id', 'ASC']] // Using 'id' since `timestamps` are disabled
         });
+        console.log("Projects fetched:", projects.rows.length, "projects found");
         res.status(200).json(projects);
     }
     catch (error) {
@@ -72,20 +74,18 @@ const getAllProjects = (req, res) => __awaiter(void 0, void 0, void 0, function*
     }
 });
 exports.getAllProjects = getAllProjects;
-// Uncomment and implement these functions as needed
-const getProjectById = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const projectId = req.params.id;
-    try {
-        const project = yield ProjectMedel_1.default.findByPk(projectId);
-        if (!project) {
-            res.status(404).json({ message: "Project not found" });
-            return;
-        }
-        res.status(200).json(project);
-    }
-    catch (error) {
-        console.error("Error fetching project:", error);
-        res.status(500).json({ message: "Internal server error" });
-    }
-});
-exports.getProjectById = getProjectById;
+// // Uncomment and implement these functions as needed
+// export const getProjectById = async (req: Request, res: Response): Promise<void> => {
+//   const projectId = req.params.id;
+//   try {
+//     const project = await Project.findByPk(projectId);
+//     if (!project) {
+//       res.status(404).json({ message: "Project not found" });
+//       return;
+//     }
+//     res.status(200).json(project);
+//   } catch (error) {
+//     console.error("Error fetching project:", error);
+//     res.status(500).json({ message: "Internal server error" });
+//   }
+// }

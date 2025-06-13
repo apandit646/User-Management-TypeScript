@@ -31,7 +31,7 @@ const ViewProject = () => {
       console.log("<<<<<<<<<<<<<<<<<<", data, "<<<<<<<", currentPage);
 
       // Expecting: { employees: [...], total: number }
-      setEmployees(data.data || []);
+      setEmployees(data);
     } catch (error) {
       console.error("Error fetching employees:", error);
     }
