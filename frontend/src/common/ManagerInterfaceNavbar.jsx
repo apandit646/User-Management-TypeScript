@@ -61,7 +61,7 @@ const ManagerInterfaceNavbar = ({ setIsLoggedIn }) => {
               </div>
               <div className="hover:scale-105 transition-transform duration-300">
                 <span className="text-3xl font-bold tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-white via-blue-100 to-purple-100">
-                  NotesPro
+                  🚀 Manager Pro 🚀
                 </span>
                 <div className="h-0.5 bg-gradient-to-r from-transparent via-white/60 to-transparent transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300" />
               </div>

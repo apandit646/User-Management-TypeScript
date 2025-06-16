@@ -76,7 +76,7 @@ export const AddProject = () => {
     <>
       <h1 className="text-2xl font-bold text-center mb-6">Add New Project</h1>
       <button className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mb-5">
-        <a href="/viewProject">Back to Home</a>
+        <a href="/viewProject">View All Project</a>
       </button>
 
       <form className="max-w-md mx-auto" onSubmit={handleSubmit}>
