@@ -20,9 +20,6 @@ app.use('/api/project', projectRoutes);
 app.use('/api/employee', employeeRoutes);
 
 
-
-
-
 // Start the server
 app.listen(port, () => {
   console.log(`Server is running at http://localhost:${port}`);

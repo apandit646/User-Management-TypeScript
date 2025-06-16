@@ -9,7 +9,7 @@ enum typeEnum {
 enum roleEnum {
     BACKEND_DEVELOPER = 'backend developer',
     FRONTEND_DEVELOPER = 'frontend developer',
-    UIUX_DEVELOPER = 'ui/ux developer',
+    UIUX_DEVELOPER = 'uiux develper',
     DEVELOPER = 'developer'
 }
 interface refEmployeeInput {
@@ -22,34 +22,47 @@ interface refEmployeeInput {
 }
 export const createEmployee = async (req: Request, res: Response): Promise<void> => {
     try {
+        console.log("Registering new employee:", req.body);
         const { name, email, phoneNo, password, type, role } = req.body as refEmployeeInput;
-        if (!name || !email || !phoneNo || !password || !type) {
+
+        // ✅ Basic validation
+        if (!name || !email || !phoneNo || !password || !type || !role) {
             res.status(400).json({ message: "All fields are required" });
             return;
         }
-        if (!role) {
-            res.status(400).json({ message: "Role is required" });
-            try {
-                await sequeliz.sync(); // Create table if it doesn't exist
-            } catch (error) {
-                res.status(500).json({ error: 'Failed to create employees table' });
-                return;
-            }
-            const existingEmployee = await User.findOne({ where: { email } });
-            if (existingEmployee) {
-                res.status(400).json({ message: "Employee already exists" });
-                return;
-            }
-            const newEmployee = await User.create({
-                name,
-                email,
-                phoneNo,
-                password, // Remember to hash passwords in production
-                type,
-                role: role ?? roleEnum.DEVELOPER
-            });
-            res.status(201).json({ message: "Employee registered successfully", employee: newEmployee });
+
+        // ✅ Ensure table exists
+        try {
+            await sequeliz.sync();
+        } catch (error) {
+            res.status(500).json({ error: "Failed to create employees table" });
+            return;
         }
+
+        // ✅ Check if user already exists
+        const existingEmployee = await User.findOne({ where: { email } });
+        if (existingEmployee) {
+            res.status(400).json({ message: "Employee already exists" });
+            return;
+        }
+
+        // ✅ Hash the password
+
+
+        // ✅ Create employee
+        const newEmployee = await User.create({
+            name,
+            email,
+            phoneNo,
+            password,
+            type,
+            role: role ?? roleEnum.DEVELOPER
+        });
+
+        res.status(201).json({
+            message: "Employee registered successfully",
+            employee: newEmployee
+        });
     } catch (error) {
         console.error("Error registering employee:", error);
         res.status(500).json({ message: "Internal server error" });

@@ -1,5 +1,4 @@
-import React, { useState } from "react";
-import root from "../../assets/root.js";
+import { useState } from "react";
 
 export const RegEmployee = () => {
   const [addEmployee, setAddEmployee] = useState({
@@ -21,16 +20,21 @@ export const RegEmployee = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    // Here you would typically send the data to your backend API
     try {
-      const response = await fetch(`${root}/api/employee/registerEmployee`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Autherntiucation: `Bearer ${localStorage.getItem("token")}`,
-        },
-        body: JSON.stringify(addEmployee),
-      });
+      const token = localStorage.getItem("token");
+
+      const response = await fetch(
+        "http://localhost:3000/api/employee/registerEmployee",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`, // ✅ Proper Authorization header
+          },
+          body: JSON.stringify(addEmployee),
+        }
+      );
+
       if (response.ok) {
         const data = await response.json();
         console.log("Employee registered successfully:", data);
@@ -46,7 +50,7 @@ export const RegEmployee = () => {
       } else {
         const errorData = await response.json();
         console.error("Error registering employee:", errorData);
-        alert(`Error: ${errorData.error}`);
+        alert(`Error: ${errorData.error || errorData.message}`);
       }
     } catch (error) {
       console.error("Error:", error);
