@@ -24,32 +24,21 @@ export const createEmployee = async (req: Request, res: Response): Promise<void>
     try {
         console.log("Registering new employee:", req.body);
         const { name, email, phoneNo, password, type, role } = req.body as refEmployeeInput;
-
-        // ✅ Basic validation
         if (!name || !email || !phoneNo || !password || !type || !role) {
             res.status(400).json({ message: "All fields are required" });
             return;
         }
-
-        // ✅ Ensure table exists
         try {
             await sequeliz.sync();
         } catch (error) {
             res.status(500).json({ error: "Failed to create employees table" });
             return;
         }
-
-        // ✅ Check if user already exists
         const existingEmployee = await User.findOne({ where: { email } });
         if (existingEmployee) {
             res.status(400).json({ message: "Employee already exists" });
             return;
         }
-
-        // ✅ Hash the password
-
-
-        // ✅ Create employee
         const newEmployee = await User.create({
             name,
             email,
@@ -92,3 +81,20 @@ export const getAllEmployees = async (req: Request, res: Response): Promise<void
         res.status(500).json({ message: "Internal server error" });
     }
 };
+export const handleDeleteEmployee = async (req: Request, res: Response): Promise<void> => {
+    try {
+        const employeeId = req.params.id;
+        console.log("Deleting employee with ID:", employeeId);
+        const employee = await User.findByPk(employeeId);
+        if (!employee) {
+            res.status(404).json({ message: "Employee not found" });
+            return;
+        }
+        await employee.destroy();
+        console.log("Employee deleted successfully:", employeeId);
+        res.status(204).json({ message: "Employee deleted successfully" });
+    } catch (error) {
+        console.error("Error deleting employee:", error);
+        res.status(500).json({ message: "Internal server error" });
+    }
+}

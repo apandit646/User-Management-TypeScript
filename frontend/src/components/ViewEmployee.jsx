@@ -12,6 +12,8 @@ const ViewEmployee = () => {
     setCurrentPage(selected);
   }, []);
 
+  // handling delete operation
+
   const getAllEmployeesData = useCallback(async () => {
     try {
       const response = await fetch(
@@ -45,7 +47,31 @@ const ViewEmployee = () => {
   useEffect(() => {
     getAllEmployeesData();
   }, [getAllEmployeesData]);
-
+  const handleDelete = useCallback(
+    async (id) => {
+      console.log("Deleting employee with ID:", id);
+      try {
+        const response = await fetch(
+          `http://localhost:3000/api/employee/deleteEmployee/${id}`,
+          {
+            method: "DELETE",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${localStorage.getItem("token")}`,
+            },
+          }
+        );
+        if (!response.ok) {
+          throw new Error("Failed to delete employee");
+        }
+        alert("Employee deleted successfully");
+        getAllEmployeesData();
+      } catch (error) {
+        console.error("Error deleting employee:", error);
+      }
+    },
+    [getAllEmployeesData]
+  );
   return (
     <div className="p-4">
       <div className="overflow-x-auto shadow-lg rounded-lg">
@@ -77,7 +103,10 @@ const ViewEmployee = () => {
                   <button className="px-3 py-1 text-xs font-medium bg-green-500 text-white rounded hover:bg-green-600 transition">
                     Edit
                   </button>
-                  <button className="px-3 py-1 text-xs font-medium bg-red-500 text-white rounded hover:bg-red-600 transition">
+                  <button
+                    onClick={() => handleDelete(user.id)}
+                    className="px-3 py-1 text-xs font-medium bg-red-500 text-white rounded hover:bg-red-600 transition"
+                  >
                     Delete
                   </button>
                 </td>
