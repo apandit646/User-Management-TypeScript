@@ -1,4 +1,4 @@
-import express, { Request, Response } from 'express';
+import express from 'express';
 import cors from 'cors';
 import bodyParser from 'body-parser';
 import dotenv from 'dotenv';
@@ -10,12 +10,15 @@ app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
-import userRoutes from './routers/User'; // Adjust the path as necessary
-import projectRoutes from './routers/Project'; // Adjust the path as necessary
+import userRoutes from './routers/User';
+import projectRoutes from './routers/Project';
+import employeeRoutes from './routers/Employee';
 
 // Use user routes
 app.use('/api/users', userRoutes);
 app.use('/api/project', projectRoutes);
+app.use('/api/employee', employeeRoutes);
+
 
 
 

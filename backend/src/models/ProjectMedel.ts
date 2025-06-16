@@ -2,6 +2,11 @@
 import { DataTypes, Model, Optional } from 'sequelize';
 import sequelize from '../db/config';
 
+enum statusEnum {
+  ONGOING = 'ongoing',
+  COMPLETED = 'completed',
+  ON_HOLD = 'on hold',
+}
 // Define the attributes for the model
 interface ProjectAttributes {
   id: number;
@@ -9,14 +14,13 @@ interface ProjectAttributes {
   clientName: string;
   startDate: string;
   endDate: string;
-  status?: 'ongoing' | 'completed' | 'on hold';
+  status?: statusEnum;
   description?: string;
   managerId: number;
 }
 
 // Allow some fields to be optional when creating a project
-interface ProjectCreationAttributes extends Optional<ProjectAttributes, 'id' | 'status' | 'description'> {}
-
+interface ProjectCreationAttributes extends Optional<ProjectAttributes, 'id' | 'status' | 'description'> { }
 // Define the model class
 class Project extends Model<ProjectAttributes, ProjectCreationAttributes>
   implements ProjectAttributes {
@@ -25,7 +29,7 @@ class Project extends Model<ProjectAttributes, ProjectCreationAttributes>
   public clientName!: string;
   public startDate!: string;
   public endDate!: string;
-  public status!: 'ongoing' | 'completed' | 'on hold';
+  public status!: statusEnum;
   public description?: string;
   public managerId!: number;
 }
@@ -60,8 +64,8 @@ Project.init(
     },
 
     status: {
-      type: DataTypes.ENUM('ongoing', 'completed', 'on hold'),
-      defaultValue: 'ongoing',
+      type: DataTypes.ENUM(statusEnum.ONGOING, statusEnum.COMPLETED, statusEnum.ON_HOLD),
+      defaultValue: statusEnum.ONGOING,
     },
 
     description: {

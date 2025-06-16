@@ -2,7 +2,7 @@
 import { Sequelize } from 'sequelize';
 
 const sequelize = new Sequelize('projectmanagement', 'root', 'root', {
-    host: 'localhost' ,
+    host: 'localhost',
     dialect: 'mysql',
     port: 3306,
 });
@@ -10,7 +10,7 @@ const sequelize = new Sequelize('projectmanagement', 'root', 'root', {
 sequelize
     .authenticate()
     .then(() => {
-        console.log('✅ Connected to MySQL via Sequelize');
+        console.log('✅ MySQL connection has been established successfully.');
     })
     .catch((err: Error) => {
         console.error('❌ Unable to connect:', err);

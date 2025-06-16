@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { use, useCallback, useEffect, useState } from "react";
 import ReactPaginate from "react-paginate";
 
 const ViewProject = () => {
@@ -9,6 +9,28 @@ const ViewProject = () => {
   const [selectedItems, setSelectedItems] = useState([]);
   const [employees, setEmployees] = useState([]);
   const ITEMS_PER_PAGE = 5;
+
+  // const editProject = useCallback(async (projectId) => {
+  //   console.log("Editing project with ID:", projectId);
+  //   if (!projectId) {
+  //     alert("Project ID is required to edit a project.");
+  //     return;
+  //   }
+  //   const url = `http://localhost:3000/api/project/editProject/${projectId}`;
+  //   const response = await fetch(url, {
+  //     method: "GET",
+  //     headers: {
+  //       "Content-Type": "application/json",
+  //       Authorization: `Bearer ${localStorage.getItem("token")}`,
+  //     },
+  //   });
+  //   if (!response.ok) {
+  //     alert("Failed to fetch project details.");
+  //     return;
+  //   }
+  //   const projectData = await response.json();
+  //   console.log("Project data fetched successfully:", projectData);
+  // }, []);
 
   const getAllEmployeesData = useCallback(async () => {
     try {
@@ -80,6 +102,12 @@ const ViewProject = () => {
   }, [fetchProjects]);
 
   const deleteProject = useCallback(async (projectId) => {
+    console.log("Deleting project with ID:", projectId);
+    if (!projectId) {
+      alert("Project ID is required to delete a project.");
+      return;
+    }
+
     try {
       if (!window.confirm("Are you sure you want to delete this project?"))
         return;
@@ -94,9 +122,7 @@ const ViewProject = () => {
           },
         }
       );
-      const data = await response.json();
-      if (!response.ok)
-        throw new Error(data.error || "Failed to delete project.");
+      if (!response.ok) throw new Error("Failed to delete project.");
 
       setProjects((prevProjects) =>
         prevProjects.filter((project) => project.id !== projectId)
@@ -174,8 +200,11 @@ const ViewProject = () => {
                   >
                     Add Member
                   </button>
-                  <button className="px-3 py-1 text-xs font-medium bg-blue-500 text-white rounded hover:bg-blue-600 transition">
-                    View Members
+                  <button
+                    // onClick={() => editProject(project.id)}
+                    className="px-3 py-1 text-xs font-medium bg-blue-500 text-white rounded hover:bg-blue-600 transition"
+                  >
+                    Edit
                   </button>
                   <button
                     onClick={() => deleteProject(project.id)}
