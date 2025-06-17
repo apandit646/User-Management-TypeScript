@@ -1,5 +1,7 @@
 import { DataTypes, Model, Optional } from 'sequelize';
 import sequelize from '../db/config';
+import User from './UserModel';
+import Project from './ProjectMedel';
 
 enum statusEnum {
     ACTIVE = 'active',
@@ -44,7 +46,7 @@ ProjectTeam.init({
         type: DataTypes.INTEGER,
         allowNull: false,
         references: {
-            model: 'project_table', // Assuming you have a 'project_table' table
+            model: Project, // Assuming you have a 'project_table' table
             key: 'id'
         }
     },
@@ -52,7 +54,7 @@ ProjectTeam.init({
         type: DataTypes.INTEGER,
         allowNull: false,
         references: {
-            model: 'users', // Assuming you have a 'users' table
+            model: User, // Assuming you have a 'users' table
             key: 'id'
         }
     },
@@ -60,7 +62,7 @@ ProjectTeam.init({
         type: DataTypes.INTEGER,
         allowNull: true,
         references: {
-            model: 'users', // Assuming you have a 'users' table
+            model: User, // Assuming you have a 'users' table
             key: 'id'
         }
     },

@@ -3,6 +3,7 @@ import { Request, Response } from "express";
 import ProjectTeam from "../models/ProjectTeamModel";
 import User from "../models/UserModel";
 import Project from "../models/ProjectMedel";
+import { off } from "process";
 enum statusEnum {
     ACTIVE = 'active',
     INACTIVE = 'inactive'
@@ -48,6 +49,56 @@ export const setprojEmployee = async (req: Request, res: Response): Promise<void
         res.status(201).json({ message: "Members assigned successfully" });
     } catch (error) {
         console.error("Error assigning members to project:", error);
+        res.status(500).json({ message: "Internal server error" });
+    }
+};
+
+// get project team members
+export const getAllProjectEmployee = async (req: Request, res: Response): Promise<void> => {
+    try {
+        console.log("Fetching all project team members for user:🤦‍♀️", req.user?.id);
+        const userId = req.user?.id; // Assuming the user ID is stored in req.user after authentication
+        const offset = Number(req.query.offset) || 0;
+        const limit = Number(req.query.limit) || 10;
+
+        if (!userId) {
+            res.status(400).json({ message: "User ID is required" });
+            return;
+        }
+
+        const projectTeam = await ProjectTeam.findAndCountAll({
+            where: {
+                userId: userId
+            },
+            offset,
+            limit,
+            order: [['id', 'DESC']],
+            // include: [
+            //     {
+            //         model: User,
+            //         as: 'user_data ',
+            //         attributes: ['id', 'name', 'email', 'phoneNo']
+            //     },
+            //     {
+            //         model: Project,
+            //         as: 'project_data',
+            //         attributes: ['id', 'projectName', 'clientName', 'startDate', 'endDate', 'status']
+            //     }
+            // ]
+        });
+
+
+        if (!projectTeam) {
+            res.status(404).json({ message: "No project team members found" });
+            return;
+        }
+        res.status(200).json({
+            message: "Project team members fetched successfully",
+            projectTeam: projectTeam.rows,
+            total: projectTeam.count
+        });
+    } catch (error) {
+        console.error("Error fetching project team members:", error);
         res.status(500).json({ message: "Internal server error" });
     }
 };

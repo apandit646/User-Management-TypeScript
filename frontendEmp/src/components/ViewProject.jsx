@@ -1,8 +1,8 @@
 import React, { useCallback, useEffect, useState } from "react";
-import ReactPaginate from "react-paginate"; // assuming it's being used
+import ReactPaginate from "react-paginate";
 
 const ViewProject = () => {
-  const [projects, setProjects] = useState([]);
+  const [projectTeams, setProjectTeams] = useState([]);
   const [currentPage, setCurrentPage] = useState(0);
   const [totalCount, setTotalCount] = useState(0);
   const ITEMS_PER_PAGE = 5;
@@ -13,10 +13,10 @@ const ViewProject = () => {
     setCurrentPage(selected);
   }, []);
 
-  const fetchProjects = useCallback(async () => {
+  const fetchProjectTeams = useCallback(async () => {
     try {
       const response = await fetch(
-        `http://localhost:3000/api/project/getProjects?offset=${
+        `http://localhost:3000/api/project/getAll?offset=${
           currentPage * ITEMS_PER_PAGE
         }&limit=${ITEMS_PER_PAGE}`,
         {
@@ -27,32 +27,34 @@ const ViewProject = () => {
           },
         }
       );
+      console.log(response);
+
       const data = await response.json();
-      console.log(data);
-
-      if (!response.ok) {
-        throw new Error(data.error || "Failed to fetch projects.");
+      console.log("😊😊😂😂🤦‍♀️😊😂😂😂😂😂🤦‍♀️🤦‍♀️", data);
+      if (response.status !== 200) {
+        throw new Error(data.error || "Failed to fetch project teams.");
       }
 
-      if (!Array.isArray(data.rows)) {
-        throw new Error("Unexpected response format from server.");
+      if (!Array.isArray(data.projectTeam)) {
+        throw new Error("Unexpected response format.");
       }
 
-      setProjects(data.rows);
+      setProjectTeams(data.projectTeam);
+
       setTotalCount(data.count);
     } catch (error) {
-      console.error("Error fetching projects:", error.message);
+      console.error("Error fetching project teams:", error.message);
     }
   }, [currentPage]);
 
   useEffect(() => {
-    fetchProjects();
-  }, [fetchProjects]);
+    fetchProjectTeams();
+  }, [fetchProjectTeams]);
 
-  const deleteProject = useCallback(async (projectId) => {
+  const deleteProjectTeam = useCallback(async (id) => {
     try {
       const response = await fetch(
-        `http://localhost:3000/api/project/deleteProject/${projectId}`,
+        `http://localhost:3000/api/projectTeam/delete/${id}`,
         {
           method: "DELETE",
           headers: {
@@ -64,14 +66,12 @@ const ViewProject = () => {
       const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(data.error || "Failed to delete project.");
+        throw new Error(data.error || "Failed to delete entry.");
       }
 
-      setProjects((prevProjects) =>
-        prevProjects.filter((project) => project.id !== projectId)
-      );
+      setProjectTeams((prev) => prev.filter((item) => item.id !== id));
     } catch (error) {
-      console.error("Error deleting project:", error.message);
+      console.error("Error deleting entry:", error.message);
     }
   }, []);
 
@@ -82,39 +82,29 @@ const ViewProject = () => {
           <thead className="text-xs text-white uppercase bg-blue-600 sticky top-0">
             <tr>
               <th className="px-6 py-3">ID</th>
-              <th className="px-6 py-3">Project Name</th>
-              <th className="px-6 py-3">Client Name</th>
-              <th className="px-6 py-3">Start Date</th>
-              <th className="px-6 py-3">End Date</th>
-              <th className="px-6 py-3">Status</th>
-              <th className="px-6 py-3">Description</th>
+              <th className="px-6 py-3">Project ID</th>
+              <th className="px-6 py-3">User ID</th>
+              <th className="px-6 py-3">Role</th>
               <th className="px-6 py-3">Manager ID</th>
+              <th className="px-6 py-3">Status</th>
               <th className="px-6 py-3 text-center">Actions</th>
             </tr>
           </thead>
           <tbody>
-            {projects.map((project) => (
+            {projectTeams.map((item) => (
               <tr
-                key={project.id}
+                key={item.id}
                 className="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-700 transition"
               >
-                <td className="px-6 py-4">{project.id}</td>
-                <td className="px-6 py-4">{project.projectName}</td>
-                <td className="px-6 py-4">{project.clientName}</td>
-                <td className="px-6 py-4">{project.startDate}</td>
-                <td className="px-6 py-4">{project.endDate}</td>
-                <td className="px-6 py-4 capitalize">{project.status}</td>
-                <td className="px-6 py-4">{project.description}</td>
-                <td className="px-6 py-4">{project.managerId}</td>
-                <td className="px-6 py-4 flex flex-wrap gap-2 justify-center">
-                  <button className="px-3 py-1 text-xs font-medium bg-green-500 text-white rounded hover:bg-green-600 transition">
-                    Add Member
-                  </button>
-                  <button className="px-3 py-1 text-xs font-medium bg-blue-500 text-white rounded hover:bg-blue-600 transition">
-                    View Members
-                  </button>
+                <td className="px-6 py-4">{item.id}</td>
+                <td className="px-6 py-4">{item.projectId}</td>
+                <td className="px-6 py-4">{item.userId}</td>
+                <td className="px-6 py-4 capitalize">{item.role}</td>
+                <td className="px-6 py-4">{item.managerId ?? "—"}</td>
+                <td className="px-6 py-4 capitalize">{item.status}</td>
+                <td className="px-6 py-4 text-center">
                   <button
-                    onClick={() => deleteProject(project.id)}
+                    onClick={() => deleteProjectTeam(item.id)}
                     className="px-3 py-1 text-xs font-medium bg-red-500 text-white rounded hover:bg-red-600 transition"
                   >
                     Delete
