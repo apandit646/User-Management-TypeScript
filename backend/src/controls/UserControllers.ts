@@ -1,4 +1,4 @@
-import sequeliz from "../db/config"
+import sequelize from "../db/config"
 import e, { Request, Response } from "express";
 import User from "../models/UserModel";
 import jwt from "jsonwebtoken";
@@ -27,14 +27,16 @@ export const registerUser = async (req: Request, res: Response): Promise<void> =
   try {
     const { name, email, phoneNo, type, role, password } = req.body as UserInput;
 
-    try {
-      await sequeliz.sync(); // Create table if it doesn't exist
-    } catch (error) {
-      res.status(500).json({ error: 'Failed to create users table' });
-      return;
-    }
+    sequelize.sync()
+      .then(() => {
+        console.log('✅ Database synced successfully.');
+      })
+      .catch((err) => {
+        console.error('❌ Failed to sync database:', err);
+      })
 
     const existingUser = await User.findOne({ where: { email } });
+    console.log("Existing user:", existingUser);
     if (existingUser) {
       res.status(400).json({ message: "User already exists" });
       return;
@@ -48,6 +50,7 @@ export const registerUser = async (req: Request, res: Response): Promise<void> =
       role,
       password, // Remember to hash passwords in production
     });
+    console.log("New user created:", newUser.id);
 
     res.status(201).json({ message: "User registered successfully", user: newUser });
   } catch (error) {

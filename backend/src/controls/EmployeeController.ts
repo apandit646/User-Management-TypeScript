@@ -1,4 +1,4 @@
-import sequeliz from "../db/config"
+import sequelize from "../db/config"
 import { Request, Response } from "express";
 import User from "../models/UserModel";
 import { generateToken } from "../auth/auth";
@@ -32,12 +32,13 @@ export const loginEmployee = async (req: Request, res: Response): Promise<void> 
             res.status(400).json({ message: "Email and password are required" });
             return;
         }
-        try {
-            await sequeliz.sync(); // Ensure the database is synced
-        } catch (error) {
-            res.status(500).json({ error: "Failed to connect to the database" });
-            return;
-        }
+        sequelize.sync()
+            .then(() => {
+                console.log('✅ Database synced successfully.');
+            })
+            .catch((err) => {
+                console.error('❌ Failed to sync database:', err);
+            })
         const employee = await User.findOne({ where: { email, password } });
         if (!employee) {
             res.status(401).json({ message: "Invalid email or password" });
@@ -82,12 +83,15 @@ export const createEmployee = async (req: Request, res: Response): Promise<void>
             res.status(400).json({ message: "All fields are required" });
             return;
         }
-        try {
-            await sequeliz.sync();
-        } catch (error) {
-            res.status(500).json({ error: "Failed to create employees table" });
-            return;
-        }
+        await sequelize.sync()
+            .then(() => {
+                console.log('✅ Database synced successfully.');
+            })
+            .catch((err) => {
+                console.error('❌ Failed to sync database:', err);
+            })
+
+
         const existingEmployee = await User.findOne({ where: { email } });
         if (existingEmployee) {
             res.status(400).json({ message: "Employee already exists" });

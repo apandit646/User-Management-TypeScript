@@ -4,7 +4,7 @@ import { Sequelize } from 'sequelize';
 const sequelize = new Sequelize('projectmanagement', 'root', 'root', {
     host: 'localhost',
     dialect: 'mysql',
-    port: 3306,
+    port: 3306
 });
 
 sequelize

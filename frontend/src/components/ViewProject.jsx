@@ -1,4 +1,4 @@
-import React, { use, useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import ReactPaginate from "react-paginate";
 
 const ViewProject = () => {
@@ -8,6 +8,7 @@ const ViewProject = () => {
   const [addmemberpop, setaddmemberpop] = useState(false);
   const [selectedItems, setSelectedItems] = useState([]);
   const [employees, setEmployees] = useState([]);
+  const [projectId, setProjectId] = useState(null);
   const ITEMS_PER_PAGE = 5;
 
   // const editProject = useCallback(async (projectId) => {
@@ -59,10 +60,19 @@ const ViewProject = () => {
     }
   }, [currentPage]);
 
-  const addemployeesfun = useCallback(() => {
-    setaddmemberpop(true);
-    getAllEmployeesData();
-  }, [getAllEmployeesData]);
+  const addemployeesfun = useCallback(
+    (projectId) => {
+      console.log("Adding employees to project with ID:", projectId);
+      if (!projectId) {
+        alert("Project ID is required to add employees.");
+        return;
+      }
+      setProjectId(projectId);
+      setaddmemberpop(true);
+      getAllEmployeesData();
+    },
+    [getAllEmployeesData]
+  );
 
   const pageCount = Math.ceil(totalCount / ITEMS_PER_PAGE);
 
@@ -134,11 +144,21 @@ const ViewProject = () => {
 
   const handleSelect = (id, role) => {
     setSelectedItems((prev) => {
-      const exists = prev.some((item) => item.id === id && item.role === role);
+      const exists = prev.some(
+        (item) =>
+          item.id === id && item.role === role && item.projectId === projectId
+      );
       if (exists) {
-        return prev.filter((item) => !(item.id === id && item.role === role));
+        return prev.filter(
+          (item) =>
+            !(
+              item.id === id &&
+              item.role === role &&
+              item.projectId === projectId
+            )
+        );
       } else {
-        return [...prev, { id, role }];
+        return [...prev, { id, role, projectId }];
       }
     });
   };
@@ -154,9 +174,12 @@ const ViewProject = () => {
       body: JSON.stringify(selectedItems),
     });
 
+    setProjectId(null);
     setSelectedItems([]);
     setaddmemberpop(false);
-  }, [selectedItems]);
+    alert("Employees added successfully to the project.");
+    fetchProjects(); // Refresh the project list after adding employees
+  }, [fetchProjects, selectedItems]);
 
   return (
     <div className="p-4">
@@ -195,7 +218,7 @@ const ViewProject = () => {
                 <td className="px-6 py-4">{project.managerId}</td>
                 <td className="px-6 py-4 flex flex-wrap gap-2 justify-center">
                   <button
-                    onClick={() => addemployeesfun()}
+                    onClick={() => addemployeesfun(project.id)}
                     className="px-3 py-1 text-xs font-medium bg-green-500 text-white rounded hover:bg-green-600 transition"
                   >
                     Add Member

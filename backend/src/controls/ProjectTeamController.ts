@@ -1,4 +1,4 @@
-import sequeliz from "../db/config"
+import sequelize from "../db/config"
 import { Request, Response } from "express";
 import ProjectTeam from "../models/ProjectTeamModel";
 import User from "../models/UserModel";
@@ -23,17 +23,18 @@ export const setprojEmployee = async (req: Request, res: Response): Promise<void
             res.status(400).json({ message: "Manager ID is required" });
             return;
         }
-        try {
-            await sequeliz.sync(); // Create table if it doesn't exist
-        } catch (error) {
-            res.status(500).json({ error: 'Failed to create project team table' });
-            return;
-        }
+        sequelize.sync()
+            .then(() => {
+                console.log('✅ Database synced successfully.');
+            })
+            .catch((err) => {
+                console.error('❌ Failed to sync database:', err);
+            })
         for (const item of data) {
             console.log(item);
             const regdata = await ProjectTeam.create({
-                projectId: parseInt(item.id),
-                userId: parseInt(item.userId),
+                projectId: parseInt(item.projectId),
+                userId: parseInt(item.id),
                 managerId: mangerId,
                 role: item.role as roleEnum, // Ensure the role is of type roleEnum
                 status: statusEnum.ACTIVE

@@ -1,4 +1,4 @@
-import sequeliz from "../db/config"
+import sequelize from "../db/config"
 import { Request, Response } from "express";
 import Project from "../models/ProjectMedel";
 
@@ -28,7 +28,7 @@ export const createProject = async (req: Request, res: Response): Promise<void> 
     }
 
     try {
-      await sequeliz.sync(); // Create table if it doesn't exist
+      await sequelize.sync(); // Create table if it doesn't exist
     } catch (error) {
       res.status(500).json({ error: 'Failed to create projects table' });
       return;

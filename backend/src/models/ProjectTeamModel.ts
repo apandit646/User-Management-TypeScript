@@ -44,7 +44,7 @@ ProjectTeam.init({
         type: DataTypes.INTEGER,
         allowNull: false,
         references: {
-            model: 'projects', // Assuming you have a 'projects' table
+            model: 'project_table', // Assuming you have a 'project_table' table
             key: 'id'
         }
     },
