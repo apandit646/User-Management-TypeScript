@@ -95,7 +95,7 @@ const RegLogin = ({ setIsLoggedIn }) => {
 
       // Store auth data (Note: localStorage not available in artifacts)
       localStorage.setItem("token", result.token);
-      localStorage.setItem("empId", result.data.id);
+      localStorage.setItem("empId", result.employee.id);
 
       // For demo, we'll just simulate successful login
       console.log("Login successful:", result);

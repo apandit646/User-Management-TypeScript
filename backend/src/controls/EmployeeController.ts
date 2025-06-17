@@ -55,9 +55,9 @@ export const loginEmployee = async (req: Request, res: Response): Promise<void> 
             email: employee.email
         });
 
-        console.log("Employee logged in successfully:", employee.id);
+        console.log("Employee logged in successfully:😂", employee.id);
         res.status(200).json({
-            message: "Employee logged in successfully",
+            message: "Employee logged in successfully😊 ",
             employee: {
                 id: employee.id,
                 name: employee.name,
