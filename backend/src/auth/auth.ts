@@ -47,4 +47,8 @@ const authenticateToken = (req: Request, res: Response, next: NextFunction): voi
   });
 };
 
-export { authenticateToken };
+const generateToken = (user: DecodedUser): string => {
+  return jwt.sign(user, secretKey, { expiresIn: '10h' }); // Token expires in 10 hours
+}
+
+export { authenticateToken, generateToken };

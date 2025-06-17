@@ -17,6 +17,7 @@ interface ProjectTeamAttributes {
     projectId: number;
     userId: number;
     role: roleEnum;
+    managerId?: number; // Optional, if needed
     status: statusEnum;
 }
 
@@ -26,6 +27,7 @@ class ProjectTeam extends Model<ProjectTeamAttributes, ProjectTeamCreationAttrib
     public id!: number;
     public projectId!: number;
     public userId!: number;
+    public managerId?: number; // Optional, if needed
     public role!: roleEnum;
     public status!: statusEnum;
     public readonly createdAt!: Date;
@@ -49,6 +51,14 @@ ProjectTeam.init({
     userId: {
         type: DataTypes.INTEGER,
         allowNull: false,
+        references: {
+            model: 'users', // Assuming you have a 'users' table
+            key: 'id'
+        }
+    },
+    managerId: {
+        type: DataTypes.INTEGER,
+        allowNull: true,
         references: {
             model: 'users', // Assuming you have a 'users' table
             key: 'id'

@@ -1,5 +1,6 @@
 import { Router } from 'express';
-import {registerUser,loginUser,getAllUsers }  from '../controls/UserControllers';
+import { registerUser, loginUser, getAllUsers } from '../controls/UserControllers';
+
 import { authenticateToken } from '../auth/auth';
 
 const router: Router = Router();
@@ -7,6 +8,8 @@ const router: Router = Router();
 router.post('/register', registerUser);
 router.post('/login', loginUser);
 router.get('/getAllUsers', authenticateToken, getAllUsers);
+
+
 // Export the router
 export default router;
 
@@ -17,7 +20,7 @@ export default router;
 // const userControllers = require('../controllers/userControllers');
 
 
-// // manger routes 
+// // manger routes
 // router.post('/register', userControllers.registerUser);
 // router.post('/login', userControllers.loginUser);
 

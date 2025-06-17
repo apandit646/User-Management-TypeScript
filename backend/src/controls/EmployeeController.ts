@@ -1,6 +1,7 @@
 import sequeliz from "../db/config"
 import { Request, Response } from "express";
 import User from "../models/UserModel";
+import { generateToken } from "../auth/auth";
 
 enum typeEnum {
     EMPLOYEE = 'employee',
@@ -20,6 +21,59 @@ interface refEmployeeInput {
     type: typeEnum;
     role?: roleEnum;
 }
+
+// login for employee portal 
+
+export const loginEmployee = async (req: Request, res: Response): Promise<void> => {
+    try {
+        console.log("Employee login attempt:", req.body);
+        const { email, password } = req.body as { email: string; password: string };
+        if (!email || !password) {
+            res.status(400).json({ message: "Email and password are required" });
+            return;
+        }
+        try {
+            await sequeliz.sync(); // Ensure the database is synced
+        } catch (error) {
+            res.status(500).json({ error: "Failed to connect to the database" });
+            return;
+        }
+        const employee = await User.findOne({ where: { email, password } });
+        if (!employee) {
+            res.status(401).json({ message: "Invalid email or password" });
+            return;
+        }
+        // Create a JWT token
+        if (employee.id === undefined) {
+            res.status(500).json({ message: "Employee ID is missing" });
+            return;
+        }
+        const token = generateToken({
+            id: employee.id,
+            name: employee.name,
+            email: employee.email
+        });
+
+        console.log("Employee logged in successfully:", employee.id);
+        res.status(200).json({
+            message: "Employee logged in successfully",
+            employee: {
+                id: employee.id,
+                name: employee.name,
+                email: employee.email,
+                phoneNo: employee.phoneNo,
+                type: employee.type,
+                role: employee.role,
+            },
+            token: token
+        });
+    } catch (error) {
+        console.error("Error logging in employee:", error);
+        res.status(500).json({ message: "Internal server error" });
+    }
+
+};
+
 export const createEmployee = async (req: Request, res: Response): Promise<void> => {
     try {
         console.log("Registering new employee:", req.body);
