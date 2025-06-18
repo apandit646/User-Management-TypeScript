@@ -4,6 +4,7 @@ import ProjectTeam from "../models/ProjectTeamModel";
 import User from "../models/UserModel";
 import Project from "../models/ProjectMedel";
 import { off } from "process";
+import { Model } from "sequelize";
 enum statusEnum {
     ACTIVE = 'active',
     INACTIVE = 'inactive'
@@ -56,8 +57,7 @@ export const setprojEmployee = async (req: Request, res: Response): Promise<void
 // get project team members
 export const getAllProjectEmployee = async (req: Request, res: Response): Promise<void> => {
     try {
-        console.log("Fetching all project team members for user:🤦‍♀️", req.user?.id);
-        const userId = req.user?.id; // Assuming the user ID is stored in req.user after authentication
+        const userId = req.user?.id;
         const offset = Number(req.query.offset) || 0;
         const limit = Number(req.query.limit) || 10;
 
@@ -67,31 +67,34 @@ export const getAllProjectEmployee = async (req: Request, res: Response): Promis
         }
 
         const projectTeam = await ProjectTeam.findAndCountAll({
-            where: {
-                userId: userId
-            },
+            where: { userId },
             offset,
             limit,
             order: [['id', 'DESC']],
-            // include: [
-            //     {
-            //         model: User,
-            //         as: 'user_data ',
-            //         attributes: ['id', 'name', 'email', 'phoneNo']
-            //     },
-            //     {
-            //         model: Project,
-            //         as: 'project_data',
-            //         attributes: ['id', 'projectName', 'clientName', 'startDate', 'endDate', 'status']
-            //     }
-            // ]
+            include: [
+                {
+                    model: User,
+                    as: 'user',
+                    attributes: ['id', 'name']
+                },
+                {
+                    model: Project,
+                    as: 'project',
+                    attributes: ['id', 'projectName']
+                },
+                {
+                    model: User,
+                    as: 'manager',
+                    attributes: ['id', 'name']
+                }
+            ]
         });
 
-
-        if (!projectTeam) {
+        if (projectTeam.count === 0) {
             res.status(404).json({ message: "No project team members found" });
             return;
         }
+
         res.status(200).json({
             message: "Project team members fetched successfully",
             projectTeam: projectTeam.rows,

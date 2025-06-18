@@ -81,11 +81,11 @@ const ViewProject = () => {
         <table className="w-full text-sm text-left text-gray-700 dark:text-gray-300">
           <thead className="text-xs text-white uppercase bg-blue-600 sticky top-0">
             <tr>
-              <th className="px-6 py-3">ID</th>
-              <th className="px-6 py-3">Project ID</th>
-              <th className="px-6 py-3">User ID</th>
+              <th className="px-6 py-3">ID Project</th>
+              <th className="px-6 py-3">Project</th>
+              <th className="px-6 py-3">User</th>
               <th className="px-6 py-3">Role</th>
-              <th className="px-6 py-3">Manager ID</th>
+              <th className="px-6 py-3">Manager</th>
               <th className="px-6 py-3">Status</th>
               <th className="px-6 py-3 text-center">Actions</th>
             </tr>
@@ -96,18 +96,18 @@ const ViewProject = () => {
                 key={item.id}
                 className="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-700 transition"
               >
-                <td className="px-6 py-4">{item.id}</td>
-                <td className="px-6 py-4">{item.projectId}</td>
-                <td className="px-6 py-4">{item.userId}</td>
+                <td className="px-6 py-4">{item.project.id}</td>
+                <td className="px-6 py-4">{item.project.projectName}</td>
+                <td className="px-6 py-4">{item.user.name}</td>
                 <td className="px-6 py-4 capitalize">{item.role}</td>
-                <td className="px-6 py-4">{item.managerId ?? "—"}</td>
+                <td className="px-6 py-4">{item.manager.name ?? "—"}</td>
                 <td className="px-6 py-4 capitalize">{item.status}</td>
                 <td className="px-6 py-4 text-center">
                   <button
                     onClick={() => deleteProjectTeam(item.id)}
-                    className="px-3 py-1 text-xs font-medium bg-red-500 text-white rounded hover:bg-red-600 transition"
+                    className="px-3 py-1 text-xs font-medium bg-green-500 text-white rounded hover:bg-green-600 transition"
                   >
-                    Delete
+                    Edit
                   </button>
                 </td>
               </tr>

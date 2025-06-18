@@ -1,6 +1,7 @@
 // models/Project.ts
 import { DataTypes, Model, Optional } from 'sequelize';
 import sequelize from '../db/config';
+import User from './UserModel'
 
 enum statusEnum {
   ONGOING = 'ongoing',
@@ -76,7 +77,7 @@ Project.init(
       type: DataTypes.INTEGER,
       allowNull: false,
       references: {
-        model: 'users',
+        model: User,
         key: 'id',
       },
     },
@@ -87,5 +88,8 @@ Project.init(
     timestamps: false,
   }
 );
+Project.belongsTo(User, { foreignKey: 'managerId', as: 'manager' }); // optional
+
+
 
 export default Project;

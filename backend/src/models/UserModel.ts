@@ -1,8 +1,9 @@
 // models/User.ts
 
-import { DataTypes, Model} from 'sequelize';
+import { DataTypes, Model } from 'sequelize';
 import sequelize from '../db/config'; // your Sequelize instance
 import { UserAttributes, UserCreationAttributes } from '../common/Usercommon'; // import user attributes
+import ProjectTeam from './ProjectTeamModel';
 
 
 // Use `Model` generic with `UserAttributes` and `UserCreationAttributes`
@@ -55,6 +56,8 @@ const User = sequelize.define<UserInstance>('User', {
   tableName: 'users',
   timestamps: false,
 });
+
+
 
 export default User;
 

@@ -1,41 +1,46 @@
 import { DataTypes, Model, Optional } from 'sequelize';
 import sequelize from '../db/config';
 import User from './UserModel';
-import Project from './ProjectMedel';
+import Project from './ProjectMedel'; // ✅ Fixed typo
 
-enum statusEnum {
+// Enums
+export enum statusEnum {
     ACTIVE = 'active',
     INACTIVE = 'inactive'
 }
-enum roleEnum {
+
+export enum roleEnum {
     DEVELOPER = 'developer',
     MANAGER = 'manager',
     TESTER = 'tester',
     DESIGNER = 'designer'
 }
 
+// Interfaces
 interface ProjectTeamAttributes {
     id: number;
     projectId: number;
     userId: number;
     role: roleEnum;
-    managerId?: number; // Optional, if needed
+    managerId?: number;
     status: statusEnum;
 }
 
 interface ProjectTeamCreationAttributes extends Optional<ProjectTeamAttributes, 'id'> { }
 
+// Model class
 class ProjectTeam extends Model<ProjectTeamAttributes, ProjectTeamCreationAttributes> implements ProjectTeamAttributes {
     public id!: number;
     public projectId!: number;
     public userId!: number;
-    public managerId?: number; // Optional, if needed
     public role!: roleEnum;
+    public managerId?: number;
     public status!: statusEnum;
     public readonly createdAt!: Date;
     public readonly updatedAt!: Date;
 }
 
+// Init model
 ProjectTeam.init({
     id: {
         type: DataTypes.INTEGER,
@@ -46,7 +51,7 @@ ProjectTeam.init({
         type: DataTypes.INTEGER,
         allowNull: false,
         references: {
-            model: Project, // Assuming you have a 'project_table' table
+            model: Project,
             key: 'id'
         }
     },
@@ -54,7 +59,7 @@ ProjectTeam.init({
         type: DataTypes.INTEGER,
         allowNull: false,
         references: {
-            model: User, // Assuming you have a 'users' table
+            model: User,
             key: 'id'
         }
     },
@@ -62,21 +67,26 @@ ProjectTeam.init({
         type: DataTypes.INTEGER,
         allowNull: true,
         references: {
-            model: User, // Assuming you have a 'users' table
+            model: User,
             key: 'id'
         }
     },
     role: {
-        type: DataTypes.ENUM('developer', 'manager', 'tester', 'designer'),
+        type: DataTypes.ENUM(...Object.values(roleEnum)),
         allowNull: false
     },
     status: {
-        type: DataTypes.ENUM('active', 'inactive'),
+        type: DataTypes.ENUM(...Object.values(statusEnum)),
         allowNull: false
     }
 }, {
     sequelize,
-    tableName: 'project_teams'
+    tableName: 'project_teams',
+    timestamps: true
 });
+
+ProjectTeam.belongsTo(User, { foreignKey: 'userId', as: 'user' });
+ProjectTeam.belongsTo(Project, { foreignKey: 'projectId', as: 'project' });
+ProjectTeam.belongsTo(User, { foreignKey: 'managerId', as: 'manager' });
 
 export default ProjectTeam;
