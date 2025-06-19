@@ -95,10 +95,14 @@ const ViewProject = () => {
         }
       );
       const data = await response.json();
-      if (!response.ok)
+      if (!response.ok) {
         throw new Error(data.error || "Failed to fetch projects.");
-      if (!Array.isArray(data.rows))
+      }
+      if (!Array.isArray(data.rows)) {
         throw new Error("Unexpected response format from server.");
+      }
+
+      console.log("<<<<<<<<<<<<<<<<<<<<🤞🤞✌✌✌", data);
 
       setProjects(data.rows);
       setTotalCount(data.count);
@@ -215,7 +219,7 @@ const ViewProject = () => {
                 </td>
                 <td className="px-6 py-4 capitalize">{project.status}</td>
                 <td className="px-6 py-4">{project.description}</td>
-                <td className="px-6 py-4">{project.managerId}</td>
+                <td className="px-6 py-4">{project.manager.name}</td>
                 <td className="px-6 py-4 flex flex-wrap gap-2 justify-center">
                   <button
                     onClick={() => addemployeesfun(project.id)}

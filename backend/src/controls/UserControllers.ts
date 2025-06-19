@@ -4,6 +4,7 @@ import User from "../models/UserModel";
 import jwt from "jsonwebtoken";
 import { generateToken } from "../auth/auth";
 import crypto from "crypto";
+import { syncDatabase } from "../db/sync";
 // const secretKey = crypto
 //   .createHash('sha256')
 //   .update(String('your-secret-key'))
@@ -27,14 +28,7 @@ export const registerUser = async (req: Request, res: Response): Promise<void> =
   try {
     const { name, email, phoneNo, type, role, password } = req.body as UserInput;
 
-    sequelize.sync()
-      .then(() => {
-        console.log('✅ Database synced successfully.');
-      })
-      .catch((err) => {
-        console.error('❌ Failed to sync database:', err);
-      })
-
+    syncDatabase()
     const existingUser = await User.findOne({ where: { email } });
     console.log("Existing user:", existingUser);
     if (existingUser) {
@@ -70,11 +64,13 @@ export const loginUser = async (req: Request, res: Response): Promise<void> => {
       res.status(401).json({ message: "Invalid email or password" });
       return;
     }
+    syncDatabase()
     // Create a JWT token
     const token = generateToken({
       id: user.id ?? 0,
       name: user.name,
-      email: user.email
+      email: user.email,
+      type: user.type
     });
     console.log("User logged in successfully:", user.id);
 
@@ -102,7 +98,6 @@ export const loginUser = async (req: Request, res: Response): Promise<void> => {
 
 export const getAllUsers = async (req: Request, res: Response): Promise<void> => {
   try {
-
     const users = await User.findAll({
       where: {
         type: 'employee' // Assuming you want to fetch only employees

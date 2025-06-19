@@ -1,47 +1,43 @@
 import { DataTypes, Model, Optional } from 'sequelize';
 import sequelize from '../db/config';
 import User from './UserModel';
-import Project from './ProjectMedel'; // ✅ Fixed typo
+import Project from './ProjectMedel';
+import { AllowNull } from 'sequelize-typescript';
 
-// Enums
 export enum statusEnum {
     ACTIVE = 'active',
     INACTIVE = 'inactive'
 }
 
-export enum roleEnum {
-    DEVELOPER = 'developer',
-    MANAGER = 'manager',
-    TESTER = 'tester',
-    DESIGNER = 'designer'
-}
-
-// Interfaces
-interface ProjectTeamAttributes {
+interface StatusModelAttributes {
     id: number;
     projectId: number;
     userId: number;
-    role: roleEnum;
-    managerId?: number;
+    activeTime: string;
+    inactiveTime: string;
+    totalTime: string;
+    dateCheck: string;
     status: statusEnum;
 }
 
-interface ProjectTeamCreationAttributes extends Optional<ProjectTeamAttributes, 'id'> { }
+interface StatusModelCreationAttributes extends Optional<StatusModelAttributes, 'id'> { }
 
 // Model class
-class ProjectTeam extends Model<ProjectTeamAttributes, ProjectTeamCreationAttributes> implements ProjectTeamAttributes {
+class StatusModel extends Model<StatusModelAttributes, StatusModelCreationAttributes>
+    implements StatusModelAttributes {
     public id!: number;
     public projectId!: number;
     public userId!: number;
-    public role!: roleEnum;
-    public managerId?: number;
+    public activeTime!: string;
+    public inactiveTime!: string;
+    public totalTime!: string;
+    public dateCheck!: string;
     public status!: statusEnum;
     public readonly createdAt!: Date;
     public readonly updatedAt!: Date;
 }
 
-// Init model
-ProjectTeam.init({
+StatusModel.init({
     id: {
         type: DataTypes.INTEGER,
         autoIncrement: true,
@@ -53,8 +49,7 @@ ProjectTeam.init({
         references: {
             model: Project,
             key: 'id'
-        },
-
+        }
     },
     userId: {
         type: DataTypes.INTEGER,
@@ -64,16 +59,20 @@ ProjectTeam.init({
             key: 'id'
         }
     },
-    managerId: {
-        type: DataTypes.INTEGER,
-        allowNull: true,
-        references: {
-            model: User,
-            key: 'id'
-        }
+    activeTime: {
+        type: DataTypes.TIME,
+        allowNull: true
     },
-    role: {
-        type: DataTypes.ENUM(...Object.values(roleEnum)),
+    inactiveTime: {
+        type: DataTypes.TIME,
+        allowNull: true
+    },
+    totalTime: {
+        type: DataTypes.TIME,
+        allowNull: true
+    },
+    dateCheck: {
+        type: DataTypes.DATE,
         allowNull: false
     },
     status: {
@@ -86,6 +85,4 @@ ProjectTeam.init({
     timestamps: true
 });
 
-
-
-export default ProjectTeam;
+export default StatusModel;

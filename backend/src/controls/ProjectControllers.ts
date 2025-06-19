@@ -1,6 +1,8 @@
 import sequelize from "../db/config"
 import { Request, Response } from "express";
 import Project from "../models/ProjectMedel";
+import User from "../models/UserModel";
+import { syncDatabase } from "../db/sync";
 
 enum statusEnum {
   ONGOING = 'ongoing',
@@ -27,12 +29,7 @@ export const createProject = async (req: Request, res: Response): Promise<void> 
       return;
     }
 
-    try {
-      await sequelize.sync(); // Create table if it doesn't exist
-    } catch (error) {
-      res.status(500).json({ error: 'Failed to create projects table' });
-      return;
-    }
+    await syncDatabase()
 
     const newProject = await Project.create({
       projectName,
@@ -59,6 +56,7 @@ export const getAllProjects = async (req: Request, res: Response): Promise<void>
   const offset = Number(req.query.offset) || 0;
   const limit = Number(req.query.limit) || 10;
   console.log("Offset:", offset, "Limit:", limit);
+  syncDatabase()
   try {
     const projects = await Project.findAndCountAll({
       where: {
@@ -66,10 +64,13 @@ export const getAllProjects = async (req: Request, res: Response): Promise<void>
       },
       offset,
       limit,
-      order: [['id', 'ASC']] // Using 'id' since `timestamps` are disabled
+      order: [['id', 'ASC']],// Using 'id' since `timestamps` are disabled
+      include: {
+        model: User,
+        as: 'manager',
+        attributes: ['id', 'name']
+      }
     });
-
-
     console.log("Projects fetched:", projects.rows.length, "projects found");
     res.status(200).json(projects);
   } catch (error) {
@@ -87,6 +88,7 @@ export const deleteProject = async (req: Request, res: Response): Promise<void> 
       res.status(404).json({ message: "Project not found" });
       return;
     }
+    await syncDatabase()
 
     await project.destroy().then(() => {
       console.log("Project deleted successfully:", projectId);
@@ -109,6 +111,7 @@ export const deleteProject = async (req: Request, res: Response): Promise<void> 
 export const getProjectById = async (req: Request, res: Response): Promise<void> => {
   const projectId = req.params.id;
   try {
+    await syncDatabase()
     const project = await Project.findByPk(projectId);
     if (!project) {
       res.status(404).json({ message: "Project not found" });

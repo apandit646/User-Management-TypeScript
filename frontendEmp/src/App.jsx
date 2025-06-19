@@ -31,7 +31,7 @@ function App() {
             {/* Main content area for routes */}
             <div className="flex-1 bg-gray-100 p-6">
               <Routes>
-                <Route path="/home" element={<HomeEmployee />}></Route>,
+                <Route path="/" element={<HomeEmployee />}></Route>,
                 <Route path="/viewProject" element={<ViewProject />}></Route>
               </Routes>
             </div>

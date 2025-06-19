@@ -5,6 +5,7 @@ import User from "../models/UserModel";
 import Project from "../models/ProjectMedel";
 import { off } from "process";
 import { Model } from "sequelize";
+import { syncDatabase } from "../db/sync";
 enum statusEnum {
     ACTIVE = 'active',
     INACTIVE = 'inactive'
@@ -25,13 +26,7 @@ export const setprojEmployee = async (req: Request, res: Response): Promise<void
             res.status(400).json({ message: "Manager ID is required" });
             return;
         }
-        sequelize.sync()
-            .then(() => {
-                console.log('✅ Database synced successfully.');
-            })
-            .catch((err) => {
-                console.error('❌ Failed to sync database:', err);
-            })
+        await syncDatabase()
         for (const item of data) {
             console.log(item);
             const regdata = await ProjectTeam.create({
@@ -60,11 +55,13 @@ export const getAllProjectEmployee = async (req: Request, res: Response): Promis
         const userId = req.user?.id;
         const offset = Number(req.query.offset) || 0;
         const limit = Number(req.query.limit) || 10;
+        console.log("you are at the employyee check", req.user?.role)
 
         if (!userId) {
             res.status(400).json({ message: "User ID is required" });
             return;
         }
+        await syncDatabase()
 
         const projectTeam = await ProjectTeam.findAndCountAll({
             where: { userId },

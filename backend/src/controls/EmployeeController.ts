@@ -2,6 +2,7 @@ import sequelize from "../db/config"
 import { Request, Response } from "express";
 import User from "../models/UserModel";
 import { generateToken } from "../auth/auth";
+import { syncDatabase } from "../db/sync";
 
 enum typeEnum {
     EMPLOYEE = 'employee',
@@ -32,13 +33,7 @@ export const loginEmployee = async (req: Request, res: Response): Promise<void> 
             res.status(400).json({ message: "Email and password are required" });
             return;
         }
-        sequelize.sync()
-            .then(() => {
-                console.log('✅ Database synced successfully.');
-            })
-            .catch((err) => {
-                console.error('❌ Failed to sync database:', err);
-            })
+        await syncDatabase()
         const employee = await User.findOne({ where: { email, password } });
         if (!employee) {
             res.status(401).json({ message: "Invalid email or password" });
@@ -52,7 +47,8 @@ export const loginEmployee = async (req: Request, res: Response): Promise<void> 
         const token = generateToken({
             id: employee.id,
             name: employee.name,
-            email: employee.email
+            email: employee.email,
+            type: employee.type
         });
 
         console.log("Employee logged in successfully:😂", employee.id);
@@ -83,15 +79,7 @@ export const createEmployee = async (req: Request, res: Response): Promise<void>
             res.status(400).json({ message: "All fields are required" });
             return;
         }
-        await sequelize.sync()
-            .then(() => {
-                console.log('✅ Database synced successfully.');
-            })
-            .catch((err) => {
-                console.error('❌ Failed to sync database:', err);
-            })
-
-
+        await syncDatabase()
         const existingEmployee = await User.findOne({ where: { email } });
         if (existingEmployee) {
             res.status(400).json({ message: "Employee already exists" });
@@ -123,6 +111,7 @@ export const getAllEmployees = async (req: Request, res: Response): Promise<void
         const offset = Number(req.query.offset) || 0;
         const limit = Number(req.query.limit) || 10;
         console.log("Offset:", offset, "Limit:", limit);
+        await syncDatabase()
         const employees = await User.findAndCountAll({
             where: { type: 'employee' },
             offset,
@@ -143,6 +132,7 @@ export const handleDeleteEmployee = async (req: Request, res: Response): Promise
     try {
         const employeeId = req.params.id;
         console.log("Deleting employee with ID:", employeeId);
+        syncDatabase()
         const employee = await User.findByPk(employeeId);
         if (!employee) {
             res.status(404).json({ message: "Employee not found" });

@@ -3,6 +3,7 @@ import { DataTypes, Model, Optional } from 'sequelize';
 import sequelize from '../db/config';
 import User from './UserModel'
 
+
 enum statusEnum {
   ONGOING = 'ongoing',
   COMPLETED = 'completed',
@@ -77,7 +78,7 @@ Project.init(
       type: DataTypes.INTEGER,
       allowNull: false,
       references: {
-        model: User,
+        model: 'users',
         key: 'id',
       },
     },
@@ -88,7 +89,8 @@ Project.init(
     timestamps: false,
   }
 );
-Project.belongsTo(User, { foreignKey: 'managerId', as: 'manager' }); // optional
+
+
 
 
 

@@ -9,6 +9,7 @@ interface DecodedUser extends JwtPayload {
   id: number;
   name: string;
   email: string;
+  type: string;
 }
 
 // Extend the Express Request interface
@@ -46,7 +47,6 @@ const authenticateToken = (req: Request, res: Response, next: NextFunction): voi
     next();
   });
 };
-
 const generateToken = (user: DecodedUser): string => {
   return jwt.sign(user, secretKey, { expiresIn: '10h' }); // Token expires in 10 hours
 }

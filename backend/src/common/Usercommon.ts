@@ -10,4 +10,11 @@ interface UserAttributes {
   password: string;
 }
 type UserCreationAttributes = Optional<UserAttributes, 'id'>;
+
+enum TypeRole {
+  ADMIN = 'admin',
+  EMPLOYEE = 'employee',
+  MANAGER = 'manager'
+}
 export type { UserAttributes, UserCreationAttributes };
+export { TypeRole }

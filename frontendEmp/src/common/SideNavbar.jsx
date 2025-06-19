@@ -11,10 +11,6 @@ export const SideNavbar = () => {
           <a href="/viewProject" className="hover:text-yellow-400">
             View Project
           </a>
-
-          <a href="#" className="hover:text-yellow-400">
-            Logout
-          </a>
         </nav>
       </div>
     </div>
